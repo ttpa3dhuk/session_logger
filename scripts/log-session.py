@@ -85,7 +85,7 @@ SESSION_FILE.write_text(new_content)
 print(f"✅ [{time_str}] {role}")
 
 # --- Daily log: append to memory/YYYY-MM-DD.md (no rotation) ---
-DAILY_DIR = Path(os.environ.get("DAILY_LOG_DIR", str(Path.home() / ".openclaw/workspace/Obsidian/Logs")))
+DAILY_DIR = Path(os.environ.get("DAILY_LOG_DIR", str(Path.home() / ".openclaw/workspace/memory")))
 daily_file = DAILY_DIR / f"{datetime.now().strftime('%Y-%m-%d')}.md"
 daily_entry = f"[{time_str}] {role}: {msg}\n"
 
