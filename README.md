@@ -1,8 +1,117 @@
 # session-logger
 
+**Постоянная память для AI-агентов.**
+
+Переживает рестарты, краши и команду `/new`. Ноль токенов. Один скрипт на Python.
+
+---
+
+## Проблема
+
+AI-агенты забывают всё после рестарта. Контекст теряется. Приходится объяснять заново. И снова. И снова.
+
+## Решение
+
+Лёгкий скрипт, который записывает каждое сообщение в файл. При запуске агент читает лог и продолжает с того же места.
+
+## Что вы получаете
+
+- **Восстановление контекста** — агент помнит после любого рестарта
+- **Ноль токенов** — работает локально на Python, без API-вызовов
+- **Автоматическая ротация** — хранит последние N сообщений, файл не раздувается
+- **Ноль настроек** — работает из коробки, файл создаётся автоматически
+- **Любой канал** — Telegram, Discord, WhatsApp, Slack, Signal
+- **~50 строк кода** — легко прочитать, легко доверять
+
+## Установка
+
+### Как скилл OpenClaw
+
+```bash
+clawhub install session-logger
+```
+
+### Вручную
+
+```bash
+curl -O https://raw.githubusercontent.com/ttpa3dhuk/session_logger/main/scripts/log-session.py
+chmod +x log-session.py
+```
+
+Зависимостей нет, только Python 3.6+.
+
+## Использование
+
+### Логировать сообщение
+
+```bash
+./log-session.py "User" "привет"
+./log-session.py "Agent" "привет! чем помочь?"
+```
+
+### Читать лог
+
+Файл лога — обычный markdown. Агент читает его при запуске:
+
+```
+**[12:34]** User: привет
+**[12:34]** Agent: привет! чем помочь?
+```
+
+### Настроить агента
+
+Добавь в инструкции агента:
+
+1. **При запуске** — прочитать файл лога
+2. **При каждом сообщении** — вызывать скрипт
+
+#### Важно: логировать ДО ответа
+
+Главная ошибка — забыть вызвать скрипт. Порядок строго такой:
+
+1. Сообщение получено → сразу логировать
+2. Думать и отвечать
+3. Ответ отправлен → сразу логировать
+
+## Настройки
+
+| Переменная | По умолчанию | Описание |
+|---|---|---|
+| `SESSION_LOG_FILE` | `~/.openclaw/workspace/SESSION-MEMORY.md` | Путь к файлу лога |
+| `SESSION_MAX_MSGS` | `10` | Сколько сообщений хранить |
+
+```bash
+SESSION_LOG_FILE="/path/to/log.md" ./log-session.py "User" "привет"
+```
+
+## Проблемы и решения
+
+| Проблема | Решение |
+|---|---|
+| `No Python 3` | Установить Python 3.6+: `brew install python3` или `apt install python3` |
+| `Permission denied` | `chmod +w ~/path/` или запустить от своего пользователя |
+| Нет секций в файле | Удалить файл — скрипт создаст новый автоматически |
+| Путь не существует | Скрипт создаёт папки сам (mkdir -p) |
+| Агент не читает лог | Добавить чтение файла в инструкции агента |
+
+## Совместимость
+
+Любой AI-агент с поддержкой скриптов:
+- OpenClaw
+- Custom GPT агенты
+- Любые LLM с tool-use
+
+## Лицензия
+
+MIT
+
+---
+
+# English
+
 **Persistent session memory for AI agents.**
 
-Survive restarts, crashes, and `/new` commands. Zero API cost. One Python script.
+Survives restarts, crashes, and `/new` commands. Zero API cost. One Python script.
 
 ## The Problem
 
@@ -32,7 +141,6 @@ clawhub install session-logger
 ### Manual
 
 ```bash
-# Download the script
 curl -O https://raw.githubusercontent.com/ttpa3dhuk/session_logger/main/scripts/log-session.py
 chmod +x log-session.py
 ```
@@ -80,8 +188,7 @@ The #1 failure mode is forgetting to log. Follow this order:
 | `SESSION_MAX_MSGS` | `10` | Messages to keep |
 
 ```bash
-# Example: use custom path
-SESSION_LOG_FILE="/path/to/my/log.md" ./log-session.py "User" "hello"
+SESSION_LOG_FILE="/path/to/log.md" ./log-session.py "User" "hello"
 ```
 
 ## Troubleshooting
@@ -91,7 +198,7 @@ SESSION_LOG_FILE="/path/to/my/log.md" ./log-session.py "User" "hello"
 | `No Python 3` | Install Python 3.6+: `brew install python3` or `apt install python3` |
 | `Permission denied` | Make path writable: `chmod +w ~/path/` |
 | `Missing sections` | Delete the file — script creates a new one automatically |
-| `Path does not exist` | Script creates folders automatically (mkdir -p) |
+| `Path does not exist` | Script creates folders automatically (mkdir-p) |
 | Agent skips the log | Add log reading to agent startup instructions |
 
 ## Works With
