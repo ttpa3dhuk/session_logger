@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""log-session.py — Append message to SESSION-MEMORY.md with rotation.
+"""log-session.py — Append message to SESSION-MEMORY.md with rotation + daily log.
 
 Usage:
     log-session.py "<role>" "<message>"
@@ -7,8 +7,9 @@ Usage:
     log-session.py "🤖 Agent" "some answer"
 
 Environment:
-    SESSION_LOG_FILE  — custom path to log file (default: ~/.openclaw/workspace/SESSION-MEMORY.md)
+    SESSION_LOG_FILE  — custom path to session file (default: ~/.openclaw/workspace/SESSION-MEMORY.md)
     SESSION_MAX_MSGS  — max messages to keep (default: 10)
+    DAILY_LOG_DIR     — daily log directory (default: ~/.openclaw/workspace/memory)
 """
 
 import sys
@@ -82,3 +83,15 @@ if context_match:
 
 SESSION_FILE.write_text(new_content)
 print(f"✅ [{time_str}] {role}")
+
+# --- Daily log: append to memory/YYYY-MM-DD.md (no rotation) ---
+DAILY_DIR = Path(os.environ.get("DAILY_LOG_DIR", str(Path.home() / ".openclaw/workspace/Obsidian/Logs")))
+daily_file = DAILY_DIR / f"{datetime.now().strftime('%Y-%m-%d')}.md"
+daily_entry = f"[{time_str}] {role}: {msg}\n"
+
+DAILY_DIR.mkdir(parents=True, exist_ok=True)
+
+if not daily_file.exists():
+    daily_file.write_text(f"# 📒 {datetime.now().strftime('%Y-%m-%d')} — Daily Log\n\n")
+with open(daily_file, "a") as f:
+    f.write(daily_entry)
