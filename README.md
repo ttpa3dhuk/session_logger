@@ -75,6 +75,38 @@ chmod +x log-session.py
 2. Думать и отвечать
 3. Ответ отправлен → сразу логировать
 
+## Дополнительно
+
+### HANDOFF.md — передача контекста при компактификации
+
+Создай `HANDOFF.md` рядом с логом. Настрой memoryFlush в конфиге агента:
+
+```json
+{
+  "compaction": {
+    "mode": "safeguard",
+    "memoryFlush": {
+      "enabled": true,
+      "prompt": "Перед компактификацией запиши в HANDOFF.md: тему, решения, задачи, важные пути. Только факты."
+    }
+  }
+}
+```
+
+### night-cleanup.sh — ночная архивация логов
+
+```bash
+cp scripts/night-cleanup.sh ~/.openclaw/scripts/
+chmod +x ~/.openclaw/scripts/night-cleanup.sh
+```
+
+Cron (3:30 ночи):
+```
+30 3 * * * ~/.openclaw/scripts/night-cleanup.sh >> /tmp/cleanup.log 2>&1
+```
+
+Архивирует daily logs старше 14 дней, удаляет старше 90 дней.
+
 ## Настройки
 
 | Переменная | По умолчанию | Описание |
@@ -184,6 +216,38 @@ The #1 failure mode is forgetting to log. Follow this order:
 1. Message arrives → log immediately
 2. Process and respond
 3. Response sent → log immediately
+
+## Extras
+
+### HANDOFF.md — context transfer on compaction
+
+Create `HANDOFF.md` next to your log. Configure memoryFlush in agent config:
+
+```json
+{
+  "compaction": {
+    "mode": "safeguard",
+    "memoryFlush": {
+      "enabled": true,
+      "prompt": "Before compaction, write to HANDOFF.md: topic, decisions, tasks, important paths. Facts only."
+    }
+  }
+}
+```
+
+### night-cleanup.sh — nightly log archival
+
+```bash
+cp scripts/night-cleanup.sh ~/.openclaw/scripts/
+chmod +x ~/.openclaw/scripts/night-cleanup.sh
+```
+
+Cron (3:30 AM):
+```
+30 3 * * * ~/.openclaw/scripts/night-cleanup.sh >> /tmp/cleanup.log 2>&1
+```
+
+Archives daily logs older than 14 days, deletes older than 90 days.
 
 ## Options
 
